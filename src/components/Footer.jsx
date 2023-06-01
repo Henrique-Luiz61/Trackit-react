@@ -1,13 +1,20 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export default function Footer() {
   return (
     <SCDivFooter>
-      <h2>Hábitos</h2>
+      <Link to={"/habitos"}>
+        <h2>Hábitos</h2>
+      </Link>
 
-      <button>Hoje</button>
+      <Link to={"/hoje"}>
+        <button>Hoje</button>
+      </Link>
 
-      <h2>Histórico</h2>
+      <Link to={"/historico"}>
+        <h2>Histórico</h2>
+      </Link>
     </SCDivFooter>
   );
 }
@@ -39,6 +46,7 @@ const SCDivFooter = styled.div`
     border: none;
     border-radius: 100%;
     margin-bottom: 40px;
+    cursor: pointer;
 
     font-style: normal;
     font-weight: 400;

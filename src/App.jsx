@@ -5,8 +5,11 @@ import TelaCadastro from "./pages/TelaCadastro";
 import Habitos from "./pages/Habitos";
 import Hoje from "./pages/Hoje";
 import Historico from "./pages/Historico";
+import axios from "axios";
 
-function App() {
+export default function App() {
+  axios.defaults.headers.common["Authorization"] = "1ErRmzeW0uJlwfU1ic4PWRZR";
+
   return (
     <BrowserRouter>
       <ResetStyle />
@@ -20,5 +23,3 @@ function App() {
     </BrowserRouter>
   );
 }
-
-export default App;

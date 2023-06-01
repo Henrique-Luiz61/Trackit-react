@@ -1,8 +1,37 @@
 import logo from "../assets/logoTrackit.png";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 export default function TelaCadastro() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+
+  const navigate = useNavigate();
+
+  function fazerCadastro(e) {
+    e.preventDefault(); //previne a perca dos dados dos values, quando o react re-renderiza a tela
+
+    const objCadastro = { email, name, image, password };
+
+    const URL =
+      "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up";
+
+    const promise = axios.post(URL, objCadastro);
+
+    promise.then((resposta) => {
+      console.log(resposta.data);
+      alert("Vocé foi cadastrado com Sucesso!");
+      navigate("/");
+    });
+    promise.catch((erro) => {
+      alert(erro.response.data.message);
+    });
+  }
+
   return (
     <SCContainerPagina>
       <SCContainerLogin>
@@ -10,12 +39,36 @@ export default function TelaCadastro() {
           <img src={logo} alt="Logo Trackit" />
         </SCDivImagem>
 
-        <SCFormContainer>
-          <input placeholder="email" />
-          <input placeholder="senha" />
-          <input placeholder="nome" />
-          <input placeholder="foto" />
-          <button>Entrar</button>
+        <SCFormContainer onSubmit={fazerCadastro}>
+          <input
+            type="email"
+            placeholder="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="senha"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="nome"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input
+            type="url"
+            placeholder="foto"
+            required
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+          />
+          <button type="submit">Cadastrar</button>
         </SCFormContainer>
 
         <Link to="/">

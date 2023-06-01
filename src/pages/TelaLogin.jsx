@@ -1,8 +1,35 @@
 import logo from "../assets/logoTrackit.png";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 export default function TelaLogin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  function fazerLogin(e) {
+    e.preventDefault(); //previne a perca dos dados dos values, quando o react re-renderiza a tela
+
+    const objLogin = { email, password };
+
+    const URL =
+      "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login";
+
+    const promise = axios.post(URL, objLogin);
+
+    promise.then((resposta) => {
+      console.log(resposta.data);
+      navigate("/hoje");
+    });
+    promise.catch((erro) => {
+      console.log("erro: ", erro.response);
+      alert(erro.response.data.message);
+    });
+  }
+
   return (
     <SCContainerPagina>
       <SCContainerLogin>
@@ -10,10 +37,22 @@ export default function TelaLogin() {
           <img src={logo} alt="Logo Trackit" />
         </SCDivImagem>
 
-        <SCFormContainer>
-          <input placeholder="email" />
-          <input placeholder="senha" />
-          <button>Entrar</button>
+        <SCFormContainer onSubmit={fazerLogin}>
+          <input
+            type="email"
+            placeholder="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="senha"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit">Entrar</button>
         </SCFormContainer>
 
         <Link to="/cadastro">
