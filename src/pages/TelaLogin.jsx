@@ -2,13 +2,19 @@ import logo from "../assets/logoTrackit.png";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { ThreeDots } from "react-loader-spinner";
 import axios from "axios";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/auth";
 
 export default function TelaLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [carregando, setCarregando] = useState(false);
 
   const navigate = useNavigate();
+
+  const { setInfo } = useContext(AuthContext);
 
   function fazerLogin(e) {
     e.preventDefault(); //previne a perca dos dados dos values, quando o react re-renderiza a tela
@@ -20,11 +26,16 @@ export default function TelaLogin() {
 
     const promise = axios.post(URL, objLogin);
 
+    setCarregando(true);
+
     promise.then((resposta) => {
+      setCarregando(false);
+      setInfo(resposta.data);
       console.log(resposta.data);
       navigate("/hoje");
     });
     promise.catch((erro) => {
+      setCarregando(false);
       console.log("erro: ", erro.response);
       alert(erro.response.data.message);
     });
@@ -52,7 +63,13 @@ export default function TelaLogin() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit">Entrar</button>
+          <button type="submit">
+            {carregando ? (
+              <ThreeDots color="#ffffff" height={50} width={50} />
+            ) : (
+              "Entrar"
+            )}
+          </button>
         </SCFormContainer>
 
         <Link to="/cadastro">
@@ -121,6 +138,9 @@ const SCFormContainer = styled.form`
     background: #52b6ff;
     border-radius: 4.63636px;
     border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     font-style: normal;
     font-weight: 400;

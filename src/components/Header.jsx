@@ -1,12 +1,15 @@
 import styled from "styled-components";
 import titulo from "../assets/trackit.png";
-import imgUsuario from "../assets/imgUsuario.png";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/auth";
 
 export default function Header() {
+  const { infoUsuario } = useContext(AuthContext);
+
   return (
     <SCTopo>
       <SCTitulo src={titulo} alt="trackit" />
-      <SCImgUsuario src={imgUsuario} alt="imagem de usuario" />
+      <SCImgUsuario src={infoUsuario.image} alt="imagem de usuario" />
     </SCTopo>
   );
 }

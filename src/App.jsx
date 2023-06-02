@@ -6,6 +6,7 @@ import Habitos from "./pages/Habitos";
 import Hoje from "./pages/Hoje";
 import Historico from "./pages/Historico";
 import axios from "axios";
+import AuthProvider from "./contexts/auth";
 
 export default function App() {
   axios.defaults.headers.common["Authorization"] = "1ErRmzeW0uJlwfU1ic4PWRZR";
@@ -13,13 +14,15 @@ export default function App() {
   return (
     <BrowserRouter>
       <ResetStyle />
-      <Routes>
-        <Route path="/" element={<TelaLogin />} />
-        <Route path="/cadastro" element={<TelaCadastro />} />
-        <Route path="/habitos" element={<Habitos />} />
-        <Route path="/hoje" element={<Hoje />} />
-        <Route path="/historico" element={<Historico />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<TelaLogin />} />
+          <Route path="/cadastro" element={<TelaCadastro />} />
+          <Route path="/habitos" element={<Habitos />} />
+          <Route path="/hoje" element={<Hoje />} />
+          <Route path="/historico" element={<Historico />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

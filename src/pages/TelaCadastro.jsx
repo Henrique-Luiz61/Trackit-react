@@ -2,6 +2,7 @@ import logo from "../assets/logoTrackit.png";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { ThreeDots } from "react-loader-spinner";
 import axios from "axios";
 
 export default function TelaCadastro() {
@@ -9,6 +10,8 @@ export default function TelaCadastro() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
+
+  const [carregando, setCarregando] = useState(false);
 
   const navigate = useNavigate();
 
@@ -22,12 +25,16 @@ export default function TelaCadastro() {
 
     const promise = axios.post(URL, objCadastro);
 
+    setCarregando(true);
+
     promise.then((resposta) => {
+      setCarregando(false);
       console.log(resposta.data);
       alert("Vocé foi cadastrado com Sucesso!");
       navigate("/");
     });
     promise.catch((erro) => {
+      setCarregando(false);
       alert(erro.response.data.message);
     });
   }
@@ -68,7 +75,13 @@ export default function TelaCadastro() {
             value={image}
             onChange={(e) => setImage(e.target.value)}
           />
-          <button type="submit">Cadastrar</button>
+          <button type="submit">
+            {carregando ? (
+              <ThreeDots color="#ffffff" height={50} width={50} />
+            ) : (
+              "Cadastrar"
+            )}
+          </button>
         </SCFormContainer>
 
         <Link to="/">
@@ -137,6 +150,9 @@ const SCFormContainer = styled.form`
     background: #52b6ff;
     border-radius: 4.63636px;
     border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     font-style: normal;
     font-weight: 400;

@@ -1,8 +1,29 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import styled from "styled-components";
+import { useState } from "react";
 
 export default function Habitos() {
+  const [dspCriarHabito, setDspCriar] = useState("none");
+  const [habitos, setHabitos] = useState([]);
+  const [dias, setDias] = useState(["D", "S", "T", "Q", "Q", "S", "S"]);
+  const [selecionados, setSelec] = useState([]);
+  const [estaSelec, setEstaSelec] = useState(false);
+
+  function selecionarDia(i) {
+    if (estaSelec === false) {
+      let novoArray = [...selecionados, i];
+      setSelec(novoArray);
+      setEstaSelec(true);
+    } else {
+      let arrayNovo = [...selecionados];
+      let posIndice = arrayNovo.indexOf(i);
+      let removeIndice = arrayNovo.splice(posIndice, 1);
+      setSelec(arrayNovo);
+      setEstaSelec(false);
+    }
+  }
+
   return (
     <>
       <Header />
@@ -10,31 +31,36 @@ export default function Habitos() {
       <SCContainerConteudo>
         <SCAddHabitos>
           <h1>Meus hábitos</h1>
-          <button>+</button>
+          <button onClick={() => setDspCriar("flex")}>+</button>
         </SCAddHabitos>
 
-        <SCCriarHabito>
+        <SCCriarHabito dspCriarHabito={dspCriarHabito}>
           <SCConteudoCard>
             <input placeholder="nome do hábito" />
 
-            <SCDiasSemana>
-              <button>D</button>
-              <button>S</button>
-              <button>T</button>
-              <button>Q</button>
-              <button>Q</button>
-              <button>S</button>
-              <button>S</button>
+            <SCDiasSemana selecionados={selecionados}>
+              {dias.map((dia, i) => (
+                <SCBotaoDia
+                  key={i}
+                  onClick={() => selecionarDia(i)}
+                  indice={i}
+                  selecionados={selecionados}
+                >
+                  {dia}
+                </SCBotaoDia>
+              ))}
             </SCDiasSemana>
 
             <SCBotoesSalvar>
-              <SCBotaoCancelar>Cancelar</SCBotaoCancelar>
+              <SCBotaoCancelar onClick={() => setDspCriar("none")}>
+                Cancelar
+              </SCBotaoCancelar>
               <SCBotaoSalvar>Salvar</SCBotaoSalvar>
             </SCBotoesSalvar>
           </SCConteudoCard>
         </SCCriarHabito>
 
-        <SCNenhumHabito>
+        <SCNenhumHabito habitos={habitos}>
           <p>
             Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para
             começar a trackear!
@@ -82,6 +108,7 @@ const SCAddHabitos = styled.div`
     background: #52b6ff;
     border-radius: 5px;
     border: none;
+    cursor: pointer;
 
     font-style: normal;
     font-weight: 400;
@@ -92,7 +119,7 @@ const SCAddHabitos = styled.div`
 
 const SCCriarHabito = styled.div`
   background-color: blue;
-  display: flex;
+  display: ${(props) => props.dspCriarHabito};
   justify-content: center;
   align-items: center;
   width: 95%;
@@ -135,25 +162,27 @@ const SCDiasSemana = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
 
-  button {
-    box-sizing: border-box;
-    width: 30px;
-    height: 30px;
-    background: #ffffff;
-    border: 1px solid #d5d5d5;
-    border-radius: 5px;
+const SCBotaoDia = styled.button`
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  background: ${(props) =>
+    props.selecionados.includes(props.indice) ? "#d5d5d5" : "#ffffff"};
+  border: 1px solid #d5d5d5;
+  border-radius: 5px;
 
-    font-style: normal;
-    font-weight: 400;
-    font-size: 19.976px;
-    line-height: 25px;
-    color: #dbdbdb;
-  }
+  font-style: normal;
+  font-weight: 400;
+  font-size: 19.976px;
+  line-height: 25px;
+  color: ${(props) =>
+    props.selecionados.includes(props.indice) ? "#ffffff" : "#d5d5d5"};
 `;
 
 const SCNenhumHabito = styled.div`
-  display: flex;
+  display: ${(props) => (props.habitos.length === 0 ? "flex" : "none")};
   width: 94%;
   font-style: normal;
   font-weight: 400;
@@ -176,6 +205,7 @@ const SCBotaoCancelar = styled.button`
   height: 35px;
   border: none;
   background-color: #ffffff;
+  cursor: pointer;
 
   font-style: normal;
   font-weight: 400;
@@ -191,6 +221,7 @@ const SCBotaoSalvar = styled.button`
   border-radius: 5px;
   border: none;
   margin-left: 5px;
+  cursor: pointer;
 
   font-style: normal;
   font-weight: 400;
