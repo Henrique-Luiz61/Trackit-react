@@ -1,27 +1,86 @@
 import Header from "../components/Header";
+import lixeira from "../assets/dump.svg";
 import Footer from "../components/Footer";
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/auth";
 
 export default function Habitos() {
   const [dspCriarHabito, setDspCriar] = useState("none");
   const [habitos, setHabitos] = useState([]);
   const [dias, setDias] = useState(["D", "S", "T", "Q", "Q", "S", "S"]);
   const [selecionados, setSelec] = useState([]);
-  const [estaSelec, setEstaSelec] = useState(false);
+  const [nomeHabito, setNomeHab] = useState("");
+  const [buscarDeNovo, setBuscar] = useState(0);
+
+  const { infoUsuario } = useContext(AuthContext);
+
+  useEffect(() => {
+    const URL =
+      "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits";
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${infoUsuario.token}`,
+      },
+    };
+
+    const promise = axios.get(URL, config);
+
+    promise.then((resposta) => {
+      console.log(resposta.data);
+      setHabitos(resposta.data);
+    });
+    promise.catch((erro) => {
+      console.log(erro);
+    });
+  }, [buscarDeNovo]);
 
   function selecionarDia(i) {
-    if (estaSelec === false) {
-      let novoArray = [...selecionados, i];
-      setSelec(novoArray);
-      setEstaSelec(true);
-    } else {
+    if (selecionados.includes(i)) {
       let arrayNovo = [...selecionados];
       let posIndice = arrayNovo.indexOf(i);
       let removeIndice = arrayNovo.splice(posIndice, 1);
       setSelec(arrayNovo);
-      setEstaSelec(false);
+    } else {
+      let novoArray = [...selecionados, i];
+      setSelec(novoArray);
     }
+  }
+
+  function salvarHabito(e) {
+    e.preventDefault();
+
+    const URL =
+      "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits";
+
+    const novoHabito = {
+      name: nomeHabito,
+      days: selecionados,
+    };
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${infoUsuario.token}`,
+      },
+    };
+
+    const promise = axios.post(URL, novoHabito, config);
+    promise.then((resposta) => {
+      console.log(resposta.data);
+      let novoSelec = [];
+      setSelec(novoSelec);
+      setNomeHab("");
+      let count = buscarDeNovo + 1;
+      setBuscar(count);
+      setDspCriar("none");
+    });
+    promise.catch((erro) => {
+      console.log(erro.response);
+      alert("deu erro");
+    });
   }
 
   return (
@@ -35,12 +94,19 @@ export default function Habitos() {
         </SCAddHabitos>
 
         <SCCriarHabito dspCriarHabito={dspCriarHabito}>
-          <SCConteudoCard>
-            <input placeholder="nome do hábito" />
+          <SCConteudoCardCriar onSubmit={salvarHabito}>
+            <input
+              tyoe="text"
+              required
+              placeholder="nome do hábito"
+              value={nomeHabito}
+              onChange={(e) => setNomeHab(e.target.value)}
+            />
 
             <SCDiasSemana selecionados={selecionados}>
               {dias.map((dia, i) => (
                 <SCBotaoDia
+                  type="button"
                   key={i}
                   onClick={() => selecionarDia(i)}
                   indice={i}
@@ -52,13 +118,45 @@ export default function Habitos() {
             </SCDiasSemana>
 
             <SCBotoesSalvar>
-              <SCBotaoCancelar onClick={() => setDspCriar("none")}>
+              <SCBotaoCancelar
+                type="button"
+                onClick={() => setDspCriar("none")}
+              >
                 Cancelar
               </SCBotaoCancelar>
-              <SCBotaoSalvar>Salvar</SCBotaoSalvar>
+
+              <SCBotaoSalvar type="submit">Salvar</SCBotaoSalvar>
             </SCBotoesSalvar>
-          </SCConteudoCard>
+          </SCConteudoCardCriar>
         </SCCriarHabito>
+
+        <SCContainerCards>
+          {habitos.map((hab) => (
+            <SCCardHabito key={hab.id}>
+              <SCConteudoCardHab>
+                <SCDescricaoHabito>
+                  <h1>{hab.name}</h1>
+                  <SCContainerDiasHab>
+                    {dias.map((dia, i) => (
+                      <SCBotaoDiaHab
+                        key={i}
+                        type="button"
+                        i={i}
+                        habDias={hab.days}
+                      >
+                        {dia}
+                      </SCBotaoDiaHab>
+                    ))}
+                  </SCContainerDiasHab>
+                </SCDescricaoHabito>
+
+                <div>
+                  <img src={lixeira} alt="excluir" />
+                </div>
+              </SCConteudoCardHab>
+            </SCCardHabito>
+          ))}
+        </SCContainerCards>
 
         <SCNenhumHabito habitos={habitos}>
           <p>
@@ -118,7 +216,6 @@ const SCAddHabitos = styled.div`
 `;
 
 const SCCriarHabito = styled.div`
-  background-color: blue;
   display: ${(props) => props.dspCriarHabito};
   justify-content: center;
   align-items: center;
@@ -128,7 +225,7 @@ const SCCriarHabito = styled.div`
   border-radius: 5px;
   margin-top: 15px;
 `;
-const SCConteudoCard = styled.div`
+const SCConteudoCardCriar = styled.form`
   background-color: #ffffff;
   width: 92%;
   height: 80%;
@@ -140,11 +237,12 @@ const SCConteudoCard = styled.div`
   input {
     box-sizing: border-box;
     width: 100%;
-    height: 45px;
+    height: 50px;
     background: #ffffff;
     border: 1px solid #d5d5d5;
     border-radius: 5px;
     padding-left: 8px;
+    margin-bottom: 10px;
 
     &::placeholder {
       font-style: normal;
@@ -155,7 +253,6 @@ const SCConteudoCard = styled.div`
     }
   }
 `;
-
 const SCDiasSemana = styled.div`
   background-color: #ffffff;
   width: 70%;
@@ -163,7 +260,6 @@ const SCDiasSemana = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
-
 const SCBotaoDia = styled.button`
   box-sizing: border-box;
   width: 30px;
@@ -175,10 +271,76 @@ const SCBotaoDia = styled.button`
 
   font-style: normal;
   font-weight: 400;
-  font-size: 19.976px;
+  font-size: 20px;
   line-height: 25px;
   color: ${(props) =>
     props.selecionados.includes(props.indice) ? "#ffffff" : "#d5d5d5"};
+`;
+
+const SCContainerCards = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  overflow-y: scroll;
+  margin-bottom: 50px;
+`;
+const SCCardHabito = styled.div`
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 95%;
+  border-radius: 5px;
+  margin-top: 15px;
+`;
+const SCConteudoCardHab = styled.div`
+  width: 92%;
+  height: 80%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+const SCDescricaoHabito = styled.div`
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  margin-bottom: 20px;
+
+  h1 {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 25px;
+    color: #666666;
+    margin-bottom: 10px;
+  }
+`;
+const SCContainerDiasHab = styled.div`
+  width: 88%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+const SCBotaoDiaHab = styled.button`
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  background: ${(props) =>
+    props.habDias.includes(props.i) ? "#d5d5d5" : "#ffffff"};
+  border: 1px solid #d5d5d5;
+  border-radius: 5px;
+
+  font-style: normal;
+  font-weight: 400;
+  font-size: 19.976px;
+  line-height: 25px;
+  color: ${(props) =>
+    props.habDias.includes(props.i) ? "#ffffff" : "#d5d5d5"};
 `;
 
 const SCNenhumHabito = styled.div`

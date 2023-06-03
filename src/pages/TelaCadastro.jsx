@@ -48,6 +48,7 @@ export default function TelaCadastro() {
 
         <SCFormContainer onSubmit={fazerCadastro}>
           <input
+            data-test="email-input"
             type="email"
             placeholder="email"
             required
@@ -55,6 +56,7 @@ export default function TelaCadastro() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <input
+            data-test="password-input"
             type="password"
             placeholder="senha"
             required
@@ -62,6 +64,7 @@ export default function TelaCadastro() {
             onChange={(e) => setPassword(e.target.value)}
           />
           <input
+            data-test="user-name-input"
             type="text"
             placeholder="nome"
             required
@@ -69,13 +72,14 @@ export default function TelaCadastro() {
             onChange={(e) => setName(e.target.value)}
           />
           <input
+            data-test="user-image-input"
             type="url"
             placeholder="foto"
             required
             value={image}
             onChange={(e) => setImage(e.target.value)}
           />
-          <button type="submit">
+          <button data-test="signup-btn" type="submit">
             {carregando ? (
               <ThreeDots color="#ffffff" height={50} width={50} />
             ) : (
@@ -84,7 +88,7 @@ export default function TelaCadastro() {
           </button>
         </SCFormContainer>
 
-        <Link to="/">
+        <Link data-test="login-link" to="/">
           <SCFacaLogin>Já tem uma conta? Faça login!</SCFacaLogin>
         </Link>
       </SCContainerLogin>

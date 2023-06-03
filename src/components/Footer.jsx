@@ -3,16 +3,16 @@ import styled from "styled-components";
 
 export default function Footer() {
   return (
-    <SCDivFooter>
-      <Link to={"/habitos"}>
+    <SCDivFooter data-test="menu">
+      <Link data-test="habit-link" to={"/habitos"}>
         <h2>Hábitos</h2>
       </Link>
 
-      <Link to={"/hoje"}>
+      <Link data-test="today-link" to={"/hoje"}>
         <button>Hoje</button>
       </Link>
 
-      <Link to={"/historico"}>
+      <Link data-test="history-link" to={"/historico"}>
         <h2>Histórico</h2>
       </Link>
     </SCDivFooter>

@@ -31,7 +31,6 @@ export default function TelaLogin() {
     promise.then((resposta) => {
       setCarregando(false);
       setInfo(resposta.data);
-      console.log(resposta.data);
       navigate("/hoje");
     });
     promise.catch((erro) => {
@@ -50,6 +49,7 @@ export default function TelaLogin() {
 
         <SCFormContainer onSubmit={fazerLogin}>
           <input
+            data-test="email-input"
             type="email"
             placeholder="email"
             required
@@ -57,13 +57,14 @@ export default function TelaLogin() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <input
+            data-test="password-input"
             type="password"
             placeholder="senha"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit">
+          <button data-test="login-btn" type="submit">
             {carregando ? (
               <ThreeDots color="#ffffff" height={50} width={50} />
             ) : (
@@ -72,7 +73,7 @@ export default function TelaLogin() {
           </button>
         </SCFormContainer>
 
-        <Link to="/cadastro">
+        <Link data-test="signup-link" to="/cadastro">
           <SCCadastre_se>Não tem uma conta? Cadastre-se</SCCadastre_se>
         </Link>
       </SCContainerLogin>

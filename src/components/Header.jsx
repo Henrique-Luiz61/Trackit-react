@@ -7,9 +7,13 @@ export default function Header() {
   const { infoUsuario } = useContext(AuthContext);
 
   return (
-    <SCTopo>
+    <SCTopo data-test="header">
       <SCTitulo src={titulo} alt="trackit" />
-      <SCImgUsuario src={infoUsuario.image} alt="imagem de usuario" />
+      <SCImgUsuario
+        data-test="avatar"
+        src={infoUsuario.image}
+        alt="imagem de usuario"
+      />
     </SCTopo>
   );
 }
