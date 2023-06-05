@@ -31,6 +31,8 @@ export default function TelaLogin() {
     promise.then((resposta) => {
       setCarregando(false);
       setInfo(resposta.data);
+      setEmail("");
+      setPassword("");
       navigate("/hoje");
     });
     promise.catch((erro) => {

@@ -14,6 +14,7 @@ export default function Hoje() {
   const [habitos, setHabitos] = useState([]);
   const [dia, setDia] = useState(dayjs().locale("pt-br").format("dddd, DD/MM"));
   const [habFeitos, setFeitos] = useState([]);
+  const [buscarDeNovo, setBuscar] = useState(0);
 
   const {
     infoUsuario,
@@ -49,7 +50,7 @@ export default function Hoje() {
     promise.catch((erro) => {
       alert(erro.responde.data.message);
     });
-  }, [habFeitos]);
+  }, [habFeitos, buscarDeNovo]);
 
   function concluirDesconcluirHab(idHab, doneHab) {
     if (habFeitos.includes(idHab) === false) {
@@ -67,6 +68,8 @@ export default function Hoje() {
         console.log(resposta.data);
         let novoArray = [...habFeitos, idHab];
         setFeitos(novoArray);
+        let novo = buscarDeNovo + 1;
+        setBuscar(novo);
       });
       promise.catch((erro) => {
         alert(erro.response.data.message);
@@ -100,9 +103,9 @@ export default function Hoje() {
       <Header />
 
       <SCContainerConteudo>
-        <SCDataProgresso>
+        <SCDataProgresso habFeitos={habFeitos}>
           <h1 data-test="today">{dia}</h1>
-          <p data-test="today-counter" habFeitos={habFeitos}>
+          <p data-test="today-counter">
             {habitos.length === 0
               ? "Nenhum hábito concluído ainda"
               : `${porcentagem}% dos hábitos concluidos`}
@@ -198,7 +201,9 @@ const SCDataProgresso = styled.div`
     font-size: 18px;
     line-height: 22px;
     color: ${(props) =>
-      props.habFeitos === undefined ? "#bababa" : "#8FC549"};
+      props.habFeitos === undefined || props.habFeitos.length === 0
+        ? "#bababa"
+        : "#8FC549"};
   }
 `;
 
