@@ -266,7 +266,7 @@ const SCSeqAtual = styled.strong`
 
 const SCRecorde = styled.strong`
   color: ${(props) =>
-    props.currentSequence === props.highestSequence &&
+    props.currentSequence <= props.highestSequence &&
     props.habFeitos.includes(props.idHabito)
       ? "#8FC549"
       : "#666666"};
