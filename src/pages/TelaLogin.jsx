@@ -47,11 +47,12 @@ export default function TelaLogin() {
           <img src={logo} alt="Logo Trackit" />
         </SCDivImagem>
 
-        <SCFormContainer onSubmit={fazerLogin}>
+        <SCFormContainer carregando={carregando} onSubmit={fazerLogin}>
           <input
             data-test="email-input"
             type="email"
             placeholder="email"
+            disabled={carregando}
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -60,11 +61,12 @@ export default function TelaLogin() {
             data-test="password-input"
             type="password"
             placeholder="senha"
+            disabled={carregando}
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button data-test="login-btn" type="submit">
+          <button data-test="login-btn" type="submit" disabled={carregando}>
             {carregando ? (
               <ThreeDots color="#ffffff" height={50} width={50} />
             ) : (
@@ -119,7 +121,7 @@ const SCFormContainer = styled.form`
     box-sizing: border-box;
     width: 303px;
     height: 45px;
-    background: #ffffff;
+    background: ${(props) => (props.carregando ? "#f2f2f2" : "#ffffff")};
     border: 1px solid #d5d5d5;
     border-radius: 5px;
     padding-left: 10px;
@@ -142,6 +144,7 @@ const SCFormContainer = styled.form`
     display: flex;
     justify-content: center;
     align-items: center;
+    opacity: ${(props) => (props.carregando ? 0.7 : 1)};
 
     font-style: normal;
     font-weight: 400;

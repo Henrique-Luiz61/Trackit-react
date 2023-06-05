@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/auth";
+import { ThreeDots } from "react-loader-spinner";
 
 export default function Habitos() {
   const [dspCriarHabito, setDspCriar] = useState("none");
@@ -14,6 +15,7 @@ export default function Habitos() {
   const [selecionados, setSelec] = useState([]);
   const [nomeHabito, setNomeHab] = useState("");
   const [buscarDeNovo, setBuscar] = useState(0);
+  const [carregando, setCarregando] = useState(false);
 
   const { infoUsuario } = useContext(AuthContext);
 
@@ -34,7 +36,7 @@ export default function Habitos() {
       setHabitos(resposta.data);
     });
     promise.catch((erro) => {
-      console.log(erro);
+      alert(erro.response.data.message);
     });
   }, [buscarDeNovo]);
 
@@ -67,8 +69,11 @@ export default function Habitos() {
       },
     };
 
+    setCarregando(true);
+
     const promise = axios.post(URL, novoHabito, config);
     promise.then((resposta) => {
+      setCarregando(false);
       console.log(resposta.data);
       let novoSelec = [];
       setSelec(novoSelec);
@@ -78,9 +83,33 @@ export default function Habitos() {
       setDspCriar("none");
     });
     promise.catch((erro) => {
-      console.log(erro.response);
-      alert("deu erro");
+      setCarregando(false);
+      alert(erro.response.data.message);
     });
+  }
+
+  function deletarHabito(id) {
+    const respConfirm = confirm("Vocẽ realmente quer deletar esse hábito ?");
+
+    if (respConfirm) {
+      const URL = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}`;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${infoUsuario.token}`,
+        },
+      };
+
+      const promise = axios.delete(URL, config);
+
+      promise.then((resposta) => {
+        let novo = buscarDeNovo + 1;
+        setBuscar(novo);
+      });
+      promise.catch((erro) => {
+        alert(erro.response.data.message);
+      });
+    }
   }
 
   return (
@@ -90,27 +119,41 @@ export default function Habitos() {
       <SCContainerConteudo>
         <SCAddHabitos>
           <h1>Meus hábitos</h1>
-          <button onClick={() => setDspCriar("flex")}>+</button>
+          <button
+            data-test="habit-create-btn"
+            onClick={() => setDspCriar("flex")}
+          >
+            +
+          </button>
         </SCAddHabitos>
 
-        <SCCriarHabito dspCriarHabito={dspCriarHabito}>
+        <SCCriarHabito
+          data-test="habit-create-container"
+          dspCriarHabito={dspCriarHabito}
+        >
           <SCConteudoCardCriar onSubmit={salvarHabito}>
             <input
+              data-test="habit-name-input"
               tyoe="text"
               required
               placeholder="nome do hábito"
               value={nomeHabito}
               onChange={(e) => setNomeHab(e.target.value)}
+              disabled={carregando}
+              carregando={carregando}
             />
 
             <SCDiasSemana selecionados={selecionados}>
               {dias.map((dia, i) => (
                 <SCBotaoDia
+                  data-test="habit-day"
                   type="button"
                   key={i}
                   onClick={() => selecionarDia(i)}
                   indice={i}
                   selecionados={selecionados}
+                  disabled={carregando}
+                  carregando={carregando}
                 >
                   {dia}
                 </SCBotaoDia>
@@ -119,26 +162,40 @@ export default function Habitos() {
 
             <SCBotoesSalvar>
               <SCBotaoCancelar
+                data-test="habit-create-cancel-btn"
                 type="button"
                 onClick={() => setDspCriar("none")}
+                disabled={carregando}
+                carregando={carregando}
               >
                 Cancelar
               </SCBotaoCancelar>
 
-              <SCBotaoSalvar type="submit">Salvar</SCBotaoSalvar>
+              <SCBotaoSalvar
+                data-test="habit-create-save-btn"
+                type="submit"
+                disabled={carregando}
+              >
+                {carregando ? (
+                  <ThreeDots color="#ffffff" height={50} width={50} />
+                ) : (
+                  "Salvar"
+                )}
+              </SCBotaoSalvar>
             </SCBotoesSalvar>
           </SCConteudoCardCriar>
         </SCCriarHabito>
 
         <SCContainerCards>
           {habitos.map((hab) => (
-            <SCCardHabito key={hab.id}>
+            <SCCardHabito data-test="habit-container" key={hab.id}>
               <SCConteudoCardHab>
                 <SCDescricaoHabito>
-                  <h1>{hab.name}</h1>
+                  <h1 data-test="habit-name">{hab.name}</h1>
                   <SCContainerDiasHab>
                     {dias.map((dia, i) => (
                       <SCBotaoDiaHab
+                        data-test="habit-day"
                         key={i}
                         type="button"
                         i={i}
@@ -151,7 +208,12 @@ export default function Habitos() {
                 </SCDescricaoHabito>
 
                 <div>
-                  <img src={lixeira} alt="excluir" />
+                  <img
+                    data-test="habit-delete-btn"
+                    src={lixeira}
+                    alt="excluir"
+                    onClick={() => deletarHabito(hab.id)}
+                  />
                 </div>
               </SCConteudoCardHab>
             </SCCardHabito>
@@ -238,7 +300,7 @@ const SCConteudoCardCriar = styled.form`
     box-sizing: border-box;
     width: 100%;
     height: 50px;
-    background: #ffffff;
+    background: ${(props) => (props.carregando ? "#f2f2f2" : "#ffffff")};
     border: 1px solid #d5d5d5;
     border-radius: 5px;
     padding-left: 8px;
@@ -384,6 +446,10 @@ const SCBotaoSalvar = styled.button`
   border: none;
   margin-left: 5px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: ${(props) => (props.carregando ? 0.7 : 1)};
 
   font-style: normal;
   font-weight: 400;

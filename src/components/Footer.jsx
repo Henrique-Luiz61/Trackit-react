@@ -1,7 +1,23 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/auth";
 
 export default function Footer() {
+  const fillStyles = {
+    path: {
+      stroke: "#FFFFFF",
+      strokeLinecap: "round",
+    },
+    trail: {
+      stroke: "#52B6FF",
+      strokeLinecap: "round",
+    },
+  };
+
+  const { totalHabitos, totalHabFeitos, porcentagem } = useContext(AuthContext);
+
   return (
     <SCDivFooter data-test="menu">
       <Link data-test="habit-link" to={"/habitos"}>
@@ -9,7 +25,9 @@ export default function Footer() {
       </Link>
 
       <Link data-test="today-link" to={"/hoje"}>
-        <button>Hoje</button>
+        <SCCircularProgressbar value={porcentagem} styles={fillStyles}>
+          <SCText>Hoje</SCText>
+        </SCCircularProgressbar>
       </Link>
 
       <Link data-test="history-link" to={"/historico"}>
@@ -38,21 +56,18 @@ const SCDivFooter = styled.div`
     line-height: 22px;
     color: #52b6ff;
   }
+`;
 
-  button {
-    width: 90px;
-    height: 90px;
-    background: #52b6ff;
-    border: none;
-    border-radius: 100%;
-    margin-bottom: 40px;
-    cursor: pointer;
+const SCCircularProgressbar = styled(CircularProgressbar)`
+  width: 90px;
+  height: 90px;
+  background-color: #52b6ff;
+  border-radius: 50%;
+  padding: 7px;
+  transition: 0.5s;
+  margin-bottom: 50px;
+`;
 
-    font-style: normal;
-    font-weight: 400;
-    font-size: 18px;
-    line-height: 22px;
-    text-align: center;
-    color: #ffffff;
-  }
+const SCText = styled.text`
+  z-index: 1;
 `;

@@ -30,7 +30,6 @@ export default function TelaCadastro() {
     promise.then((resposta) => {
       setCarregando(false);
       console.log(resposta.data);
-      alert("Vocé foi cadastrado com Sucesso!");
       navigate("/");
     });
     promise.catch((erro) => {
@@ -46,7 +45,7 @@ export default function TelaCadastro() {
           <img src={logo} alt="Logo Trackit" />
         </SCDivImagem>
 
-        <SCFormContainer onSubmit={fazerCadastro}>
+        <SCFormContainer carregando={carregando} onSubmit={fazerCadastro}>
           <input
             data-test="email-input"
             type="email"
@@ -134,7 +133,7 @@ const SCFormContainer = styled.form`
     box-sizing: border-box;
     width: 303px;
     height: 45px;
-    background: #ffffff;
+    background: ${(props) => (props.carregando ? "#f2f2f2" : "#ffffff")};
     border: 1px solid #d5d5d5;
     border-radius: 5px;
     padding-left: 10px;
@@ -157,6 +156,7 @@ const SCFormContainer = styled.form`
     display: flex;
     justify-content: center;
     align-items: center;
+    opacity: ${(props) => (props.carregando ? 0.7 : 1)};
 
     font-style: normal;
     font-weight: 400;
