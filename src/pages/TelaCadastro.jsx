@@ -53,6 +53,7 @@ export default function TelaCadastro() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={carregando}
           />
           <input
             data-test="password-input"
@@ -61,6 +62,7 @@ export default function TelaCadastro() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={carregando}
           />
           <input
             data-test="user-name-input"
@@ -69,6 +71,7 @@ export default function TelaCadastro() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
+            disabled={carregando}
           />
           <input
             data-test="user-image-input"
@@ -77,8 +80,9 @@ export default function TelaCadastro() {
             required
             value={image}
             onChange={(e) => setImage(e.target.value)}
+            disabled={carregando}
           />
-          <button data-test="signup-btn" type="submit">
+          <button data-test="signup-btn" type="submit" disabled={carregando}>
             {carregando ? (
               <ThreeDots color="#ffffff" height={50} width={50} />
             ) : (

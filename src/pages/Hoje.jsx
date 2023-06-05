@@ -102,7 +102,7 @@ export default function Hoje() {
       <SCContainerConteudo>
         <SCDataProgresso>
           <h1 data-test="today">{dia}</h1>
-          <p data-test="today-counter">
+          <p data-test="today-counter" habFeitos={habFeitos}>
             {habitos.length === 0
               ? "Nenhum hábito concluído ainda"
               : `${porcentagem}% dos hábitos concluidos`}
@@ -197,7 +197,8 @@ const SCDataProgresso = styled.div`
     font-weight: 400;
     font-size: 18px;
     line-height: 22px;
-    color: #bababa;
+    color: ${(props) =>
+      props.habFeitos === undefined ? "#bababa" : "#8FC549"};
   }
 `;
 
